@@ -1,16 +1,16 @@
 import graphene
 from graphene import ObjectType, String, Field, List, Mutation, Int, Float, InputObjectType
+from graphene_django import DjangoObjectType
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from .models import Customer, Product, Order
 
 # --- Types ---
-class CustomerType(graphene.ObjectType):
-    id = Int()
-    name = String()
-    email = String()
-    phone = String()
+class CustomerType(DjangoObjectType):
+    class Meta:
+        model = Customer
+        fields = ("id", "name", "email", "phone")
 
 class ProductType(graphene.ObjectType):
     id = Int()
@@ -149,6 +149,10 @@ class Mutation(ObjectType):
     create_product = CreateProduct.Field()
     create_order = CreateOrder.Field()
 
-# --- Query Root (keep your hello query) ---
+# --- Query Root ---
 class Query(ObjectType):
     hello = String(default_value="Hello, GraphQL!")
+    all_customers = graphene.List(CustomerType)
+    
+    def resolve_all_customers(self, info):
+        return Customer.objects.all()
