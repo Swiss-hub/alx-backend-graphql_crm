@@ -158,7 +158,7 @@ class Mutation(graphene.ObjectType):
     create_order = CreateOrder.Field()
 
 # --- Query Root ---
-class Query(ObjectType):
+class Query(graphene.ObjectType):
     hello = String(default_value="Hello, GraphQL!")
     
     # Filtered queries using DjangoFilterConnectionField
