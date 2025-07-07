@@ -3,7 +3,7 @@ from django_filters import rest_framework as filters
 from .models import Customer, Product, Order
 
 
-class CustomerFilter(filters.FilterSet):
+class CustomerFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(lookup_expr='icontains')
     email = django_filters.CharFilter(lookup_expr='icontains')
     created_at__gte = django_filters.DateTimeFilter(field_name='created_at', lookup_expr='gte')
