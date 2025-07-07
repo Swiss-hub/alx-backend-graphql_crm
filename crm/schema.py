@@ -1,10 +1,11 @@
 import graphene
 from graphene import ObjectType, String, Field, List, Mutation, Int, Float, InputObjectType
-from graphene_django import DjangoObjectType
+from graphene_django import DjangoObjectType, DjangoFilterConnectionField
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from .models import Customer, Product, Order
+from .filters import CustomerFilter, ProductFilter, OrderFilter
 import re
 from django.utils import timezone
 
@@ -12,17 +13,20 @@ from django.utils import timezone
 class CustomerType(DjangoObjectType):
     class Meta:
         model = Customer
-        fields = ("id", "name", "email", "phone")
+        fields = ("id", "name", "email", "phone", "created_at")
+        filterset_class = CustomerFilter
 
 class ProductType(DjangoObjectType):
     class Meta:
         model = Product
         fields = ("id", "name", "price", "stock")
+        filterset_class = ProductFilter
 
 class OrderType(DjangoObjectType):
     class Meta:
         model = Order
         fields = ("id", "customer", "products", "total_amount", "order_date")
+        filterset_class = OrderFilter
 
 # --- Inputs ---
 class CustomerInput(InputObjectType):
@@ -156,7 +160,14 @@ class Mutation(ObjectType):
 # --- Query Root ---
 class Query(ObjectType):
     hello = String(default_value="Hello, GraphQL!")
-    all_customers = graphene.List(CustomerType)
     
-    def resolve_all_customers(self, info):
+    # Filtered queries using DjangoFilterConnectionField
+    all_customers = DjangoFilterConnectionField(CustomerType)
+    all_products = DjangoFilterConnectionField(ProductType)
+    all_orders = DjangoFilterConnectionField(OrderType)
+    
+    # Legacy simple query for backward compatibility
+    customers = graphene.List(CustomerType)
+    
+    def resolve_customers(self, info):
         return Customer.objects.all()
