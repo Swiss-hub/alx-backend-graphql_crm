@@ -79,5 +79,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 GRAPHENE = {
-    'SCHEMA': 'alx_backend_graphql_crm.schema.schema'  # Where your GraphQL schema is located
+    'SCHEMA': 'schema.schema'  # Where your GraphQL schema is located
 }
