@@ -30,27 +30,27 @@ class OrderType(DjangoObjectType):
 
 # --- Inputs ---
 class CustomerInput(InputObjectType):
-    name = String(required=True)
-    email = String(required=True)
-    phone = String()
+    name = graphene.String(required=True)
+    email = graphene.String(required=True)
+    phone = graphene.String()
 
 class ProductInput(InputObjectType):
-    name = String(required=True)
-    price = Float(required=True)
-    stock = Int()
+    name = graphene.String(required=True)
+    price = graphene.Float(required=True)
+    stock = graphene.Int()
 
 class OrderInput(InputObjectType):
-    customer_id = Int(required=True)
-    product_ids = List(Int, required=True)
-    order_date = String()
+    customer_id = graphene.Int(required=True)
+    product_ids = graphene.List(graphene.Int, required=True)
+    order_date = graphene.String()
 
 # --- Mutations ---
-class CreateCustomer(Mutation):
+class CreateCustomer(graphene.Mutation):
     class Arguments:
         input = CustomerInput(required=True)
 
-    customer = Field(CustomerType)
-    message = String()
+    customer = graphene.Field(CustomerType)
+    message = graphene.String()
 
     def mutate(self, info, input):
         # Email validation
@@ -71,7 +71,7 @@ class CreateCustomer(Mutation):
         )
         return CreateCustomer(customer=customer, message="Customer created successfully.")
 
-class BulkCreateCustomers(Mutation):
+class BulkCreateCustomers(graphene.Mutation):
     class Arguments:
         input = List(CustomerInput, required=True)
 
@@ -104,7 +104,7 @@ class BulkCreateCustomers(Mutation):
                     errors.append(f"Row {idx+1}: {str(e)}")
         return BulkCreateCustomers(customers=created, errors=errors)
 
-class CreateProduct(Mutation):
+class CreateProduct(graphene.Mutation):
     class Arguments:
         input = ProductInput(required=True)
 
@@ -123,7 +123,7 @@ class CreateProduct(Mutation):
         )
         return CreateProduct(product=product, message="Product created successfully.")
 
-class CreateOrder(Mutation):
+class CreateOrder(graphene.Mutation):
     class Arguments:
         input = OrderInput(required=True)
 
@@ -151,7 +151,7 @@ class CreateOrder(Mutation):
         return CreateOrder(order=order, message="Order created successfully.")
 
 # --- Mutation Root ---
-class Mutation(ObjectType):
+class Mutation(graphene.ObjectType):
     create_customer = CreateCustomer.Field()
     bulk_create_customers = BulkCreateCustomers.Field()
     create_product = CreateProduct.Field()
